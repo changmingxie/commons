@@ -18,9 +18,9 @@ package org.mengyun.commons.collapser.handler;
 
 import com.lmax.disruptor.EventHandler;
 import org.mengyun.commons.collapser.CollapserConfig;
+import org.mengyun.commons.collapser.context.ThreadContextSynchronizationManager;
 import org.mengyun.commons.collapser.queue.GroupEvent;
 import org.mengyun.commons.collapser.queue.RequestPromise;
-import org.mengyun.commons.collapser.context.ThreadContextSynchronizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +58,7 @@ public class GroupEventHandler implements
 
 //        if ((sequence % workPoolSize) == ordinal) {
         if ((event.getRequestPromise().getGroup().hashCode() % workPoolSize) == ordinal) {
-            try {
-                doInvoke(event, sequence, endOfBatch);
-            } finally {
-                event.clear();
-            }
+            doInvoke(event, sequence, endOfBatch);
         }
     }
 
