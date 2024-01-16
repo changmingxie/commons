@@ -7,12 +7,34 @@ public class GroupEvent {
 
     public static final GroupEventFactory FACTORY = new GroupEventFactory();
 
-    private RequestPromise requestPromise;
-    private String threadContext;
+    private volatile RequestPromise requestPromise;
+    private volatile String threadContext;
+    private volatile int ordinal = -1;
 
-    public <T,R> void reset(RequestPromise<T, R> requestPromise, String threadContext) {
+    public <T, R> void reset(RequestPromise<T, R> requestPromise, String threadContext) {
         this.requestPromise = requestPromise;
         this.threadContext = threadContext;
+        this.ordinal = caculateOrdinal();
+    }
+
+    private int caculateOrdinal() {
+        int index = -1;
+        if (this.requestPromise != null) {
+            index = 0;
+            String group = this.requestPromise.getGroup();
+            if (group != null && group.length() != 0) {
+                index = group.hashCode();
+                if (index != Integer.MIN_VALUE) {
+                    index = index < 0 ? -index : index;
+                }
+            }
+        }
+
+        return index;
+    }
+
+    public int getOrdinal() {
+        return ordinal;
     }
 
     public RequestPromise getRequestPromise() {
@@ -24,6 +46,7 @@ public class GroupEvent {
     }
 
     public void clear() {
+        ordinal = -1;
         requestPromise = null;
         threadContext = null;
     }

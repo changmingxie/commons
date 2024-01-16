@@ -40,4 +40,7 @@ public class InvokeCollapserTest {
             invokeCollapser.invoke("1000", i, callable);
         }
     }
+
+
+    
 }

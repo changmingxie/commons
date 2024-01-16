@@ -56,8 +56,8 @@ public class GroupEventHandler implements
     public void onEvent(final GroupEvent event, final long sequence,
                         final boolean endOfBatch) throws Exception {
 
-//        if ((sequence % workPoolSize) == ordinal) {
-        if ((event.getRequestPromise().getGroup().hashCode() % workPoolSize) == ordinal) {
+        int eventOrdinal = event.getOrdinal();
+        if(eventOrdinal>=0 && eventOrdinal % workPoolSize == ordinal) {
             doInvoke(event, sequence, endOfBatch);
         }
     }

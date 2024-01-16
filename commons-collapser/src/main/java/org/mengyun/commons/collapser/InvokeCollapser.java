@@ -63,17 +63,17 @@ public class InvokeCollapser {
 
             while (!(published = this.groupDisruptor.tryPublish(eventTranslator)) && attempts < collapserConfig.getMaxRetryAttempts()) {
                 attempts++;
-                LockSupport.parkNanos(attempts * collapserConfig.getRetryIntervalMillsecond() * 1000l);
+                LockSupport.parkNanos(attempts * collapserConfig.getRetryIntervalMillsecond() * 1000l * 1000l);
             }
         } catch (Exception e) {
             throw new SystemException(e);
         }
 
         if (!published && attempts >= collapserConfig.getMaxRetryAttempts()) {
-            logger.info(String.format("agg ring buffer is full, eventHandler will be executed according your QueueFullPolicy, %s.%s",
+            logger.info(String.format("collapser ring buffer is full, eventHandler will be executed according your QueueFullPolicy, %s.%s",
                     "GroupInvoker",
                     "invoke"));
-            throw new SystemException(String.format("agg ring buffer is full, and retry %d times but failed, the request info is: %s", collapserConfig.getMaxRetryAttempts(), String.valueOf(request)));
+            throw new SystemException(String.format("collapser ring buffer is full, and retry %d times but failed, the request info is: %s", collapserConfig.getMaxRetryAttempts(), String.valueOf(request)));
         }
 
         long currentTime = System.currentTimeMillis();
